@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}Danh sách giỏ hàng - Bookshop{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-cart3"></i> Danh sách giỏ hàng</h2>
+    </div>
+
+    <div class="row">
+        {% for cart in carts %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>
+                        <i class="bi bi-person-circle text-primary"></i>
+                        <strong>{{ cart.customer.user_name }}</strong>
+                    </span>
+                    <span class="badge bg-primary">{{ cart.total_items }} sản phẩm</span>
+                </div>
+                <div class="card-body">
+                    {% if cart.items.all %}
+                    <ul class="list-group list-group-flush mb-3">
+                        {% for item in cart.items.all|slice:":3" %}
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>{{ item.book.title|truncatechars:20 }}</span>
+                            <span class="badge bg-secondary">x{{ item.quantity }}</span>
+                        </li>
+                        {% endfor %}
+                        {% if cart.items.count > 3 %}
+                        <li class="list-group-item text-muted">
+                            ... và {{ cart.items.count|add:"-3" }} sản phẩm khác
+                        </li>
+                        {% endif %}
+                    </ul>
+                    {% else %}
+                    <p class="text-muted text-center"><i class="bi bi-cart-x"></i> Giỏ hàng trống</p>
+                    {% endif %}
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="price-tag">${{ cart.total_price }}</span>
+                        <a href="{% url 'cart_detail' cart.id %}" class="btn btn-sm btn-primary">
+                            <i class="bi bi-eye"></i> Xem chi tiết
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                <i class="bi bi-info-circle"></i> Chưa có giỏ hàng nào.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

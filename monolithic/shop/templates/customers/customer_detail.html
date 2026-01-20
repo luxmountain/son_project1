@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ customer.user_name }} - Bookshop{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'customer_list' %}">Khách hàng</a></li>
+            <li class="breadcrumb-item active">{{ customer.user_name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="bi bi-person-circle text-primary" style="font-size: 5rem;"></i>
+                    <h3 class="mt-3">{{ customer.user_name }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-info-circle"></i> Thông tin khách hàng</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th width="150"><i class="bi bi-person"></i> Username:</th>
+                            <td>{{ customer.user_name }}</td>
+                        </tr>
+                        <tr>
+                            <th><i class="bi bi-telephone"></i> Điện thoại:</th>
+                            <td>{{ customer.phone_number|default:"Chưa cập nhật" }}</td>
+                        </tr>
+                        <tr>
+                            <th><i class="bi bi-calendar"></i> Ngày sinh:</th>
+                            <td>{{ customer.dob|date:"d/m/Y"|default:"Chưa cập nhật" }}</td>
+                        </tr>
+                        <tr>
+                            <th><i class="bi bi-clock"></i> Ngày tạo:</th>
+                            <td>{{ customer.created_at|date:"d/m/Y H:i" }}</td>
+                        </tr>
+                        <tr>
+                            <th><i class="bi bi-arrow-repeat"></i> Cập nhật:</th>
+                            <td>{{ customer.updated_at|date:"d/m/Y H:i" }}</td>
+                        </tr>
+                    </table>
+
+                    <hr>
+
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'customer_cart' customer.id %}" class="btn btn-success">
+                            <i class="bi bi-cart"></i> Xem giỏ hàng
+                        </a>
+                        <a href="{% url 'customer_edit' customer.id %}" class="btn btn-primary">
+                            <i class="bi bi-pencil"></i> Sửa
+                        </a>
+                        <a href="{% url 'customer_delete' customer.id %}" class="btn btn-danger"
+                            onclick="return confirmDelete('Bạn có chắc muốn xóa khách hàng này?')">
+                            <i class="bi bi-trash"></i> Xóa
+                        </a>
+                        <a href="{% url 'customer_list' %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Quay lại
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if book %}Sửa sách{% else %}Thêm sách mới{% endif %} - Bookshop{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'book_list' %}">Sách</a></li>
+            <li class="breadcrumb-item active">{% if book %}Sửa{% else %}Thêm mới{% endif %}</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        {% if book %}
+                        <i class="bi bi-pencil"></i> Sửa thông tin sách
+                        {% else %}
+                        <i class="bi bi-plus-circle"></i> Thêm sách mới
+                        {% endif %}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Tên sách *</label>
+                            <input type="text" class="form-control" id="title" name="title"
+                                value="{{ book.title|default:'' }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="author" class="form-label">Tác giả *</label>
+                            <input type="text" class="form-control" id="author" name="author"
+                                value="{{ book.author|default:'' }}" required>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="price" class="form-label">Giá ($) *</label>
+                                <input type="number" class="form-control" id="price" name="price" step="0.01" min="0"
+                                    value="{{ book.price|default:'0.00' }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="stock" class="form-label">Số lượng tồn kho *</label>
+                                <input type="number" class="form-control" id="stock" name="stock" min="0"
+                                    value="{{ book.stock|default:'0' }}" required>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-lg"></i> {% if book %}Cập nhật{% else %}Thêm sách{% endif %}
+                            </button>
+                            <a href="{% url 'book_list' %}" class="btn btn-secondary">
+                                <i class="bi bi-x-lg"></i> Hủy
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

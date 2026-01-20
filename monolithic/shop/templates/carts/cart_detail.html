@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block title %}Giỏ hàng của {{ cart.customer.user_name }} - Bookshop{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'cart_list' %}">Giỏ hàng</a></li>
+            <li class="breadcrumb-item active">{{ cart.customer.user_name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-cart3"></i> Giỏ hàng của {{ cart.customer.user_name }}
+                    </h5>
+                    {% if cart.items.all %}
+                    <a href="{% url 'cart_clear' cart.id %}" class="btn btn-sm btn-outline-danger"
+                        onclick="return confirmDelete('Bạn có chắc muốn xóa tất cả sản phẩm?')">
+                        <i class="bi bi-trash"></i> Xóa tất cả
+                    </a>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    {% if cart.items.all %}
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Sách</th>
+                                    <th>Giá</th>
+                                    <th>Số lượng</th>
+                                    <th>Thành tiền</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in cart.items.all %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ item.book.title }}</strong>
+                                        <br><small class="text-muted">{{ item.book.author }}</small>
+                                    </td>
+                                    <td>${{ item.book.price }}</td>
+                                    <td>
+                                        <form method="post" action="{% url 'cart_update_quantity' item.id %}"
+                                            class="d-flex gap-1">
+                                            {% csrf_token %}
+                                            <input type="number" name="quantity" value="{{ item.quantity }}" min="1"
+                                                max="{{ item.book.stock }}" class="form-control form-control-sm"
+                                                style="width: 70px;">
+                                            <button type="submit" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-check"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                    <td class="price-tag">${{ item.subtotal }}</td>
+                                    <td>
+                                        <a href="{% url 'cart_remove_item' cart.id item.book.id %}"
+                                            class="btn btn-sm btn-outline-danger"
+                                            onclick="return confirmDelete('Xóa sản phẩm này?')">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-cart-x text-muted" style="font-size: 4rem;"></i>
+                        <p class="mt-3 text-muted">Giỏ hàng trống</p>
+                        <a href="{% url 'book_list' %}" class="btn btn-primary">
+                            <i class="bi bi-book"></i> Mua sắm ngay
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-receipt"></i> Tổng đơn hàng</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Số sản phẩm:</span>
+                        <strong>{{ cart.total_items }}</strong>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="h5">Tổng tiền:</span>
+                        <span class="h4 price-tag">${{ cart.total_price }}</span>
+                    </div>
+
+                    {% if cart.items.all %}
+                    <form method="post" action="{% url 'cart_checkout' cart.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success w-100 btn-lg">
+                            <i class="bi bi-credit-card"></i> Thanh toán
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h6><i class="bi bi-person"></i> Thông tin khách hàng</h6>
+                    <p class="mb-1"><strong>{{ cart.customer.user_name }}</strong></p>
+                    <p class="mb-1 text-muted">
+                        <i class="bi bi-telephone"></i> {{ cart.customer.phone_number|default:"Chưa cập nhật" }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
